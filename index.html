@@ -2,63 +2,49 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PRECEDENT COMPARISON MATRIX</title>
+    <title>PRECEDENT COMPARISON</title>
     <style>
         :root { --accent: #ff6b00; }
-        body { margin: 0; font-family: sans-serif; background: #fff; }
-        
-        .comp-wrapper { display: flex; gap: 20px; padding: 40px; justify-content: center; }
-        .plan-column { flex: 1; max-width: 600px; border: 1px solid #eee; padding: 20px; }
-        
-        .plan-image { width: 100%; height: 500px; object-fit: contain; background: #f9f9f9; border: 1px solid #ddd; }
-        
-        .analysis-table { width: 100%; border-collapse: collapse; margin-top: 30px; font-size: 14px; }
-        .analysis-table th { background: #000; color: #fff; padding: 12px; text-align: left; text-transform: uppercase; font-size: 10px; }
-        .analysis-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: top; }
-        .feature-label { font-weight: 800; width: 30%; color: var(--accent); text-transform: uppercase; font-size: 11px; }
-        
-        h2 { letter-spacing: -1px; border-bottom: 4px solid #000; padding-bottom: 10px; }
+        body { margin: 0; font-family: sans-serif; background: #fff; padding: 40px; }
+        .wrapper { display: flex; gap: 30px; justify-content: center; }
+        .column { flex: 1; max-width: 500px; border: 1px solid #eee; padding: 20px; }
+        .img-box { width: 100%; height: 400px; background: #f9f9f9; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .img-box img { max-width: 95%; max-height: 95%; object-fit: contain; }
+        .table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
+        .table th { background: #000; color: #fff; padding: 10px; text-align: left; text-transform: uppercase; font-size: 9px; }
+        .table td { padding: 12px; border-bottom: 1px solid #eee; }
+        .label { font-weight: 800; color: var(--accent); width: 30%; font-size: 10px; text-transform: uppercase; }
+        h2 { border-bottom: 3px solid #000; padding-bottom: 5px; letter-spacing: -1px; }
     </style>
 </head>
 <body>
 
-<div class="comp-wrapper" id="comparison-view">
-    </div>
+<div class="wrapper" id="view"></div>
 
 <script src="database.js"></script>
 <script>
-    function renderComparison() {
-        const container = document.getElementById('comparison-view');
-        
-        // Target specifically Mellifont (Cistercian) and Cluny (Benedictine)
-        const cistercian = siteData.find(s => s.bucket === "Cistercian");
-        const benedictine = siteData.find(s => s.bucket === "Benedictine");
-
-        const pair = [cistercian, benedictine];
-
-        container.innerHTML = pair.map(s => `
-            <div class="plan-column">
-                <div style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket.toUpperCase()}</div>
+    function render() {
+        const view = document.getElementById('view');
+        view.innerHTML = siteData.map(s => `
+            <div class="column">
+                <div style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket}</div>
                 <h2>${s.name}</h2>
-                <img src="${s.plan_url}" class="plan-image" onerror="this.src='https://via.placeholder.com/600x500?text=Image+Load+Error'">
-                
-                <table class="analysis-table">
-                    <tr><th>Feature</th><th>Typological Detail</th></tr>
-                    <tr><td class="feature-label">Plan Logic</td><td>${s.plan_type}</td></tr>
-                    <tr><td class="feature-label">East End</td><td>${s.bucket === 'Cistercian' ? 'Square / Flat' : 'Radial / Chevet'}</td></tr>
-                    <tr><td class="feature-label">Aesthetic</td><td>${s.style}</td></tr>
-                    <tr><td class="feature-label">Notes</td><td>${s.notes}</td></tr>
+                <div class="img-box">
+                    <img src="${s.plan_url}" onerror="this.src='https://placehold.co/600x400?text=Image+Error'">
+                </div>
+                <table class="table">
+                    <tr><th>Feature</th><th>Detail</th></tr>
+                    <tr><td class="label">Logic</td><td>${s.plan_type}</td></tr>
+                    <tr><td class="label">End Type</td><td>${s.bucket === 'Cistercian' ? 'Square Apse' : 'Radial Chevet'}</td></tr>
+                    <tr><td class="label">Notes</td><td>${s.notes}</td></tr>
                 </table>
             </div>
         `).join('');
     }
 
     window.onload = () => {
-        if (typeof siteData !== 'undefined') {
-            renderComparison();
-        } else {
-            document.body.innerHTML = "<h1 style='color:red; padding:40px;'>Error: database.js not found or contains syntax errors.</h1>";
-        }
+        if (typeof siteData !== 'undefined') render();
+        else document.body.innerHTML = "Check database.js path.";
     };
 </script>
 
