@@ -2,80 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>ARCHITECTURAL COMPARISON & DATA LABELING</title>
+    <title>ARCHITECTURAL COMPARISON</title>
     <style>
         :root { --accent: #ff6b00; }
-        body { margin: 0; font-family: sans-serif; background: #fff; padding: 40px; }
-        .wrapper { display: flex; gap: 30px; justify-content: center; }
-        .column { flex: 1; max-width: 500px; border: 1px solid #eee; padding: 20px; position: relative; }
         
-        /* Container for image + SVG overlay */
-        .img-container { position: relative; width: 100%; background: #f9f9f9; border: 1px solid #ddd; }
-        .img-container img { width: 100%; display: block; height: auto; }
-        
-        /* Tooltip styling */
-        .hotspot { fill: rgba(255, 107, 0, 0.2); stroke: var(--accent); stroke-width: 2; cursor: pointer; transition: 0.3s; }
-        .hotspot:hover { fill: rgba(255, 107, 0, 0.5); }
+        /* Force everything to fit one screen */
+        body, html { 
+            margin: 0; padding: 0; 
+            height: 100vh; width: 100vw;
+            font-family: sans-serif; background: #fff;
+            overflow: hidden; /* Prevents main page scroll */
+        }
 
-        .table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
-        .table th { background: #000; color: #fff; padding: 10px; text-align: left; text-transform: uppercase; font-size: 9px; }
-        .table td { padding: 12px; border-bottom: 1px solid #eee; }
-        .label-key { font-weight: 800; color: var(--accent); width: 30%; font-size: 10px; text-transform: uppercase; }
-        h2 { border-bottom: 3px solid #000; padding-bottom: 5px; letter-spacing: -1px; }
+        .main-container {
+            display: flex; flex-direction: column;
+            height: 100%; padding: 20px; box-sizing: border-box;
+        }
+
+        .wrapper { 
+            display: flex; gap: 20px; flex: 1; 
+            min-height: 0; /* Critical for flex-shrink to work */
+        }
+
+        .column { 
+            flex: 1; display: flex; flex-direction: column;
+            border: 1px solid #eee; padding: 15px; min-height: 0;
+        }
+        
+        .img-container { 
+            position: relative; flex: 1; 
+            background: #f9f9f9; border: 1px solid #ddd;
+            min-height: 0; display: flex; align-items: center; justify-content: center;
+        }
+
+        .img-container img { 
+            max-width: 100%; max-height: 100%; 
+            object-fit: contain; display: block; 
+        }
+        
+        .hotspot { 
+            fill: rgba(255, 107, 0, 0.15); stroke: var(--accent); 
+            stroke-width: 1.5; cursor: help; transition: 0.2s; 
+        }
+        .hotspot:hover { fill: rgba(255, 107, 0, 0.4); stroke-width: 3; }
+
+        .info-table { font-size: 11px; margin-top: 10px; border-top: 2px solid #000; width: 100%; }
+        .info-table td { padding: 5px 0; border-bottom: 1px solid #eee; }
+        .label-key { font-weight: 800; color: var(--accent); text-transform: uppercase; width: 40%; }
+
+        h2 { margin: 5px 0; font-size: 1.2rem; letter-spacing: -0.5px; }
+        footer { font-size: 10px; color: #aaa; text-align: center; padding: 10px 0; }
     </style>
 </head>
 <body>
 
-<div id="view">Loading plans...</div>
+<div class="main-container">
+    <div id="view" class="wrapper">Loading...</div>
+    
+    <footer>
+        &copy; 2026 [Your Name]. All Rights Reserved. | Proprietary Comparative Engine
+    </footer>
+</div>
 
 <script src="database.js"></script>
 <script>
     function render() {
         const view = document.getElementById('view');
-        if (typeof siteData === 'undefined') {
-            view.innerHTML = "Error: database.js not found.";
-            return;
-        }
+        if (typeof siteData === 'undefined') return;
 
-        view.className = "wrapper";
-        view.innerHTML = siteData.map(s => {
-            // Logic for coordinates (Adjust percentages if boxes don't align with your specific jpg)
-            const isCistercian = s.bucket === "Cistercian";
-            
-            return `
+        view.innerHTML = siteData.map(s => `
             <div class="column">
-                <div style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket}</div>
+                <div style="font-size: 9px; font-weight: 900; color: var(--accent);">${s.bucket}</div>
                 <h2>${s.name}</h2>
                 
                 <div class="img-container">
-                    <img src="${s.plan_url}" onerror="this.src='https://placehold.co/600x400?text=File+Missing'">
+                    <img src="${s.plan_url}">
                     
-                    <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                        <rect x="35" y="35" width="30" height="30" class="hotspot">
-                            <title>COURTYARD / CLOISTER: Central open space for meditation.</title>
+                    <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; preserveAspectRatio: none;">
+                        <rect x="${s.labels.cloister.x}" y="${s.labels.cloister.y}" 
+                              width="${s.labels.cloister.w}" height="${s.labels.cloister.h}" class="hotspot">
+                            <title>GARTH / CLOISTER | Proportion: ${s.proportions.cloister}</title>
                         </rect>
                         
-                        ${isCistercian ? 
-                            `<rect x="42" y="65" width="15" height="30" class="hotspot">
-                                <title>REFECTORY: 90° Perpendicular orientation (Cistercian trait).</title>
-                             </rect>` : 
-                            `<rect x="30" y="65" width="40" height="15" class="hotspot">
-                                <title>REFECTORY: Parallel orientation (Benedictine trait).</title>
-                             </rect>`
-                        }
+                        <rect x="${s.labels.refectory.x}" y="${s.labels.refectory.y}" 
+                              width="${s.labels.refectory.w}" height="${s.labels.refectory.h}" class="hotspot">
+                            <title>REFECTORY | Proportion: ${s.proportions.refectory}</title>
+                        </rect>
                     </svg>
                 </div>
 
-                <table class="table">
-                    <tr><th>Comparative Feature</th><th>Analysis</th></tr>
-                    <tr><td class="label-key">Refectory Angle</td><td>${isCistercian ? '90° (Perpendicular)' : '0° (Parallel)'}</td></tr>
-                    <tr><td class="label-key">Plan Strategy</td><td>${s.plan_type}</td></tr>
-                    <tr><td class="label-key">Interaction</td><td>Hover boxes for labels</td></tr>
+                <table class="info-table">
+                    <tr><td class="label-key">Refectory</td><td>${s.bucket === 'Cistercian' ? 'Vertical (90°)' : 'Horizontal'}</td></tr>
+                    <tr><td class="label-key">Ratio Logic</td><td>${s.proportions.refectory}</td></tr>
                 </table>
-            </div>`;
-        }).join('');
+            </div>`).join('');
     }
-
     window.onload = render;
 </script>
 
