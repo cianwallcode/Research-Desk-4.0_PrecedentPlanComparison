@@ -5,13 +5,10 @@ const siteData = [
     "name": "Mellifont Abbey",
     "bucket": "Cistercian",
     "plan_url": "mellifont.jpg",
-    "proportions": {
-        "cloister": "1:1 Square",
-        "refectory": "1:√2 Ratio"
-    },
     "labels": {
-        "cloister": { "x": 35, "y": 35, "w": 30, "h": 30 },
-        "refectory": { "x": 42, "y": 65, "w": 16, "h": 22.6 } // 16 * 1.414 = 22.6
+        "church": { "x": 30, "y": 10, "w": 45, "h": 20, "name": "CHURCH", "ratio": "Flat Apse / Square Nave" },
+        "cloister": { "x": 38, "y": 35, "w": 25, "h": 25, "name": "GARTH / CLOISTER", "ratio": "1:1 Square" },
+        "refectory": { "x": 45, "y": 62, "w": 10, "h": 25, "name": "REFECTORY", "ratio": "1:√2 (Vertical)" }
     }
   },
   {
@@ -19,13 +16,10 @@ const siteData = [
     "name": "Cluny Abbey III",
     "bucket": "Benedictine",
     "plan_url": "cluny.jpg",
-    "proportions": {
-        "cloister": "1:1.2 Ratio",
-        "refectory": "1:3 Extended"
-    },
     "labels": {
-        "cloister": { "x": 35, "y": 35, "w": 36, "h": 30 },
-        "refectory": { "x": 30, "y": 65, "w": 40, "h": 13 }
+        "church": { "x": 20, "y": 5, "w": 65, "h": 25, "name": "CHURCH", "ratio": "Five Aisle / Radiating Chapels" },
+        "cloister": { "x": 35, "y": 35, "w": 30, "h": 25, "name": "GARTH / CLOISTER", "ratio": "1:1.2 Rectangular" },
+        "refectory": { "x": 30, "y": 65, "w": 40, "h": 10, "name": "REFECTORY", "ratio": "1:3 (Parallel)" }
     }
   }
 ];
