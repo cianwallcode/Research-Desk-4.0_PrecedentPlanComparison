@@ -25,12 +25,14 @@
 <script>
     function render() {
         const view = document.getElementById('view');
+        if (!window.siteData) return;
+        
         view.innerHTML = siteData.map(s => `
             <div class="column">
                 <div style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket}</div>
                 <h2>${s.name}</h2>
                 <div class="img-box">
-                    <img src="${s.plan_url}" onerror="this.src='https://placehold.co/600x400?text=Image+Error'">
+                    <img src="${s.plan_url}" onerror="this.src='https://placehold.co/600x400?text=File+Not+Found'">
                 </div>
                 <table class="table">
                     <tr><th>Feature</th><th>Detail</th></tr>
@@ -42,10 +44,7 @@
         `).join('');
     }
 
-    window.onload = () => {
-        if (typeof siteData !== 'undefined') render();
-        else document.body.innerHTML = "Check database.js path.";
-    };
+    window.onload = render;
 </script>
 
 </body>
