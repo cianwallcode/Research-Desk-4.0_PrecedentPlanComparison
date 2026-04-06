@@ -2,55 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>MONASTERY DATA LABELING</title>
+    <title>Architectural Synthesis Tool</title>
     <style>
-        :root { --accent: #ff6b00; }
-        body { margin: 0; padding: 20px; font-family: 'Helvetica', sans-serif; background: #f4f4f4; }
+        :root { --accent: #ff6b00; --bg: #f8f8f8; }
+        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: #333; padding-bottom: 100px; }
         
-        .wrapper { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; }
+        /* Layout */
+        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
+        .wrapper { display: flex; gap: 20px; justify-content: center; align-items: flex-start; }
         
-        /* Shrunk the columns so they fit better */
+        /* Smaller Image Columns */
         .column { 
-            flex: 1; min-width: 400px; max-width: 500px; 
-            background: white; padding: 20px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            flex: 1; background: white; padding: 15px; border: 1px solid #ddd;
+            max-width: 450px; /* Limits size so it fits on screen */
         }
         
-        .img-container { position: relative; width: 100%; border: 1px solid #ddd; }
-        .img-container img { width: 100%; display: block; }
+        .img-box { position: relative; width: 100%; border: 1px solid #eee; margin-top: 10px; line-height: 0; }
+        .img-box img { width: 100%; height: auto; display: block; }
         
-        /* Hotspot & Text Styles */
-        .hotspot { fill: rgba(255, 107, 0, 0.1); stroke: var(--accent); stroke-width: 1.5; }
-        .label-text { fill: var(--accent); font-size: 3px; font-weight: bold; pointer-events: none; text-transform: uppercase; }
+        /* Interactive Labels */
+        .hotspot { fill: rgba(255, 107, 0, 0.1); stroke: var(--accent); stroke-width: 1.5; cursor: pointer; }
+        .label-text { fill: var(--accent); font-size: 3.5px; font-weight: 900; pointer-events: none; }
 
-        h2 { margin: 10px 0; font-size: 1.2rem; border-bottom: 2px solid #333; padding-bottom: 5px; }
-        .type-tag { font-size: 10px; font-weight: 800; color: var(--accent); }
+        /* Synthesis UI */
+        .synth-box { background: #000; color: #fff; padding: 10px; font-size: 11px; margin-top: 10px; border-left: 4px solid var(--accent); }
+        h2 { font-size: 1.1rem; margin: 5px 0; letter-spacing: -0.5px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
+
+        /* New Interactions Panel */
+        .controls { background: white; padding: 15px; border-bottom: 1px solid #ddd; margin-bottom: 20px; position: sticky; top: 0; z-index: 10; display: flex; gap: 20px; align-items: center; }
+        .btn { padding: 8px 15px; background: #eee; border: none; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
+        .btn:hover { background: var(--accent); color: white; }
     </style>
 </head>
 <body>
 
-<div id="view" class="wrapper"></div>
+<div class="controls">
+    <strong style="font-size: 12px;">SYNTHESIS FILTER:</strong>
+    <button class="btn" onclick="highlight('CHURCH')">Identify Church</button>
+    <button class="btn" onclick="highlight('REFECTORY')">Identify Refectory</button>
+    <button class="btn" onclick="highlight('GARTH')">Identify Garth</button>
+    <button class="btn" onclick="location.reload()">Reset</button>
+</div>
+
+<div class="container">
+    <div id="view" class="wrapper"></div>
+</div>
 
 <script src="database.js"></script>
 <script>
+    function highlight(name) {
+        document.querySelectorAll('.hotspot').forEach(el => {
+            el.style.fill = el.getAttribute('data-name') === name ? 'rgba(255, 107, 0, 0.6)' : 'rgba(0,0,0,0.05)';
+        });
+    }
+
     function render() {
         const view = document.getElementById('view');
         if (typeof siteData === 'undefined') return;
 
         view.innerHTML = siteData.map(s => `
             <div class="column">
-                <div class="type-tag">${s.bucket}</div>
+                <span style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket} STYLE</span>
                 <h2>${s.name}</h2>
+                <div class="synth-box">${s.synthesis}</div>
                 
-                <div class="img-container">
+                <div class="img-box">
                     <img src="${s.plan_url}">
-                    
                     <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
                         ${s.labels.map(l => `
                             <g>
-                                <rect x="${l.x}" y="${l.y}" width="${l.w}" height="${l.h}" class="hotspot">
-                                    <title>Ratio: ${l.ratio}</title>
+                                <rect x="${l.x}" y="${l.y}" width="${l.w}" height="${l.h}" 
+                                      class="hotspot" data-name="${l.name}">
+                                    <title>${l.name} | Ratio: ${l.ratio}</title>
                                 </rect>
-                                <text x="${l.x + 1}" y="${l.y + l.h - 1}" class="label-text">${l.name}</text>
+                                <text x="${l.x + 1}" y="${l.y + l.h - 1.5}" class="label-text">${l.name}</text>
                             </g>
                         `).join('')}
                     </svg>
@@ -59,6 +84,5 @@
     }
     window.onload = render;
 </script>
-
 </body>
 </html>
