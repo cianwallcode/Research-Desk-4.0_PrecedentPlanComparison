@@ -5,11 +5,11 @@ const siteData = [
     "name": "Mellifont Abbey",
     "bucket": "Cistercian",
     "plan_url": "mellifont.jpg",
-    "synthesis": "Vertical Refectory (90°) + Square Apse.",
+    "synthesis": "90° Refectory alignment + Square Apse. Typical Cistercian austerity.",
     "labels": [
-        { "x": 30, "y": 10, "w": 40, "h": 18, "name": "CHURCH", "ratio": "Flat Cistercian End" },
-        { "x": 38, "y": 32, "w": 24, "h": 24, "name": "GARTH", "ratio": "1:1 Square" },
-        { "x": 46, "y": 60, "w": 8, "h": 28, "name": "REFECTORY", "ratio": "90° Perpendicular" }
+        { "x": 30, "y": 10, "w": 40, "h": 18, "name": "CHURCH", "prop": "1:3 Axis" },
+        { "x": 38, "y": 32, "w": 24, "h": 24, "name": "GARTH", "prop": "1:1 Square" },
+        { "x": 46, "y": 60, "w": 8, "h": 28, "name": "REFECTORY", "prop": "1:√2 Ratio" }
     ]
   },
   {
@@ -17,11 +17,11 @@ const siteData = [
     "name": "Cluny Abbey III",
     "bucket": "Benedictine",
     "plan_url": "cluny.jpg",
-    "synthesis": "Parallel Refectory + Radiating Chevet.",
+    "synthesis": "Parallel Refectory + Radiating Chevet. Focus on monumental liturgical scale.",
     "labels": [
-        { "x": 10, "y": 5, "w": 80, "h": 22, "name": "CHURCH", "ratio": "Radiating Chapels" },
-        { "x": 32, "y": 32, "w": 36, "h": 24, "name": "GARTH", "ratio": "1:1.5 Rectangular" },
-        { "x": 30, "y": 60, "w": 40, "h": 8, "name": "REFECTORY", "ratio": "Parallel Orientation" }
+        { "x": 10, "y": 5, "w": 80, "h": 22, "name": "CHURCH", "prop": "1:5 Axis" },
+        { "x": 32, "y": 32, "w": 36, "h": 24, "name": "GARTH", "prop": "1:1.5 Ratio" },
+        { "x": 30, "y": 60, "w": 40, "h": 8, "name": "REFECTORY", "prop": "1:4 Ratio" }
     ]
   }
 ];
