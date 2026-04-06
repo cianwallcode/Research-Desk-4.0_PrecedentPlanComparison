@@ -5,7 +5,7 @@ const siteData = [
     "name": "Mellifont Abbey",
     "bucket": "Cistercian",
     "plan_url": "mellifont.jpg",
-    "synthesis": "Vertical Refectory (90°) + Square Apse. Focus on austerity and manual labor.",
+    "synthesis": "Vertical Refectory (90°) + Square Apse.",
     "labels": [
         { "x": 30, "y": 10, "w": 40, "h": 18, "name": "CHURCH", "ratio": "Flat Cistercian End" },
         { "x": 38, "y": 32, "w": 24, "h": 24, "name": "GARTH", "ratio": "1:1 Square" },
@@ -17,7 +17,7 @@ const siteData = [
     "name": "Cluny Abbey III",
     "bucket": "Benedictine",
     "plan_url": "cluny.jpg",
-    "synthesis": "Parallel Refectory + Radiating Chevet. Focus on liturgy and monumental scale.",
+    "synthesis": "Parallel Refectory + Radiating Chevet.",
     "labels": [
         { "x": 10, "y": 5, "w": 80, "h": 22, "name": "CHURCH", "ratio": "Radiating Chapels" },
         { "x": 32, "y": 32, "w": 36, "h": 24, "name": "GARTH", "ratio": "1:1.5 Rectangular" },
