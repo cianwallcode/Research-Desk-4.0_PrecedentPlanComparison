@@ -2,52 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>PRECEDENT COMPARISON</title>
+    <title>ARCHITECTURAL COMPARISON & DATA LABELING</title>
     <style>
         :root { --accent: #ff6b00; }
         body { margin: 0; font-family: sans-serif; background: #fff; padding: 40px; }
         .wrapper { display: flex; gap: 30px; justify-content: center; }
-        .column { flex: 1; max-width: 500px; border: 1px solid #eee; padding: 20px; }
-        .img-box { width: 100%; height: 400px; background: #f9f9f9; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; }
-        .img-box img { max-width: 95%; max-height: 95%; object-fit: contain; }
+        .column { flex: 1; max-width: 500px; border: 1px solid #eee; padding: 20px; position: relative; }
+        
+        /* Container for image + SVG overlay */
+        .img-container { position: relative; width: 100%; background: #f9f9f9; border: 1px solid #ddd; }
+        .img-container img { width: 100%; display: block; height: auto; }
+        
+        /* Tooltip styling */
+        .hotspot { fill: rgba(255, 107, 0, 0.2); stroke: var(--accent); stroke-width: 2; cursor: pointer; transition: 0.3s; }
+        .hotspot:hover { fill: rgba(255, 107, 0, 0.5); }
+
         .table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
         .table th { background: #000; color: #fff; padding: 10px; text-align: left; text-transform: uppercase; font-size: 9px; }
         .table td { padding: 12px; border-bottom: 1px solid #eee; }
-        .label { font-weight: 800; color: var(--accent); width: 30%; font-size: 10px; text-transform: uppercase; }
+        .label-key { font-weight: 800; color: var(--accent); width: 30%; font-size: 10px; text-transform: uppercase; }
         h2 { border-bottom: 3px solid #000; padding-bottom: 5px; letter-spacing: -1px; }
     </style>
 </head>
 <body>
 
-<div id="view">Loading comparison data...</div>
+<div id="view">Loading plans...</div>
 
 <script src="database.js"></script>
 <script>
-    window.onload = function() {
+    function render() {
         const view = document.getElementById('view');
-        
         if (typeof siteData === 'undefined') {
-            view.innerHTML = "<h1 style='color:red'>Error: database.js not found in repository.</h1>";
+            view.innerHTML = "Error: database.js not found.";
             return;
         }
 
         view.className = "wrapper";
-        view.innerHTML = siteData.map(s => `
+        view.innerHTML = siteData.map(s => {
+            // Logic for coordinates (Adjust percentages if boxes don't align with your specific jpg)
+            const isCistercian = s.bucket === "Cistercian";
+            
+            return `
             <div class="column">
                 <div style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket}</div>
                 <h2>${s.name}</h2>
-                <div class="img-box">
-                    <img src="${s.plan_url}" onerror="this.src='https://placehold.co/600x400?text=Check+Filename'">
+                
+                <div class="img-container">
+                    <img src="${s.plan_url}" onerror="this.src='https://placehold.co/600x400?text=File+Missing'">
+                    
+                    <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                        <rect x="35" y="35" width="30" height="30" class="hotspot">
+                            <title>COURTYARD / CLOISTER: Central open space for meditation.</title>
+                        </rect>
+                        
+                        ${isCistercian ? 
+                            `<rect x="42" y="65" width="15" height="30" class="hotspot">
+                                <title>REFECTORY: 90° Perpendicular orientation (Cistercian trait).</title>
+                             </rect>` : 
+                            `<rect x="30" y="65" width="40" height="15" class="hotspot">
+                                <title>REFECTORY: Parallel orientation (Benedictine trait).</title>
+                             </rect>`
+                        }
+                    </svg>
                 </div>
+
                 <table class="table">
-                    <tr><th>Feature</th><th>Detail</th></tr>
-                    <tr><td class="label">Logic</td><td>${s.plan_type}</td></tr>
-                    <tr><td class="label">End Type</td><td>${s.bucket === 'Cistercian' ? 'Square Apse' : 'Radial Chevet'}</td></tr>
-                    <tr><td class="label">Notes</td><td>${s.notes}</td></tr>
+                    <tr><th>Comparative Feature</th><th>Analysis</th></tr>
+                    <tr><td class="label-key">Refectory Angle</td><td>${isCistercian ? '90° (Perpendicular)' : '0° (Parallel)'}</td></tr>
+                    <tr><td class="label-key">Plan Strategy</td><td>${s.plan_type}</td></tr>
+                    <tr><td class="label-key">Interaction</td><td>Hover boxes for labels</td></tr>
                 </table>
-            </div>
-        `).join('');
-    };
+            </div>`;
+        }).join('');
+    }
+
+    window.onload = render;
 </script>
 
 </body>
