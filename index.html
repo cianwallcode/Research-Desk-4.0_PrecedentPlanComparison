@@ -25,7 +25,11 @@
 <script>
     function render() {
         const view = document.getElementById('view');
-        if (!window.siteData) return;
+        // If siteData isn't loaded, show an error on the page
+        if (typeof siteData === 'undefined') {
+            view.innerHTML = "<h1 style='color:red'>Error: database.js not loaded. Check file name.</h1>";
+            return;
+        }
         
         view.innerHTML = siteData.map(s => `
             <div class="column">
@@ -44,6 +48,7 @@
         `).join('');
     }
 
+    // Run render immediately on load
     window.onload = render;
 </script>
 
