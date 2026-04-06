@@ -2,84 +2,67 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Architectural Synthesis Tool</title>
+    <title>Monastic Synthesis Tool</title>
     <style>
-        :root { --accent: #ff6b00; --bg: #f8f8f8; }
-        body { margin: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: #333; padding-bottom: 100px; }
+        :root { --accent: #ff6b00; }
+        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #fff; overflow-y: scroll; }
         
         /* Layout */
-        .container { max-width: 1100px; margin: 0 auto; padding: 20px; }
-        .wrapper { display: flex; gap: 20px; justify-content: center; align-items: flex-start; }
+        .dashboard { display: flex; flex-direction: column; height: 100vh; }
+        .header { padding: 15px 40px; border-bottom: 2px solid #000; display: flex; justify-content: space-between; }
         
-        /* Smaller Image Columns */
-        .column { 
-            flex: 1; background: white; padding: 15px; border: 1px solid #ddd;
-            max-width: 450px; /* Limits size so it fits on screen */
-        }
+        .main-view { display: flex; gap: 20px; padding: 20px; flex: 1; min-height: 0; }
+        .column { flex: 1; display: flex; flex-direction: column; min-height: 0; border: 1px solid #eee; padding: 10px; }
         
-        .img-box { position: relative; width: 100%; border: 1px solid #eee; margin-top: 10px; line-height: 0; }
-        .img-box img { width: 100%; height: auto; display: block; }
-        
+        /* Smaller Images */
+        .img-wrap { position: relative; flex: 1; background: #f9f9f9; min-height: 0; display: flex; justify-content: center; }
+        .img-wrap img { max-height: 45vh; width: auto; object-fit: contain; }
+
         /* Interactive Labels */
-        .hotspot { fill: rgba(255, 107, 0, 0.1); stroke: var(--accent); stroke-width: 1.5; cursor: pointer; }
-        .label-text { fill: var(--accent); font-size: 3.5px; font-weight: 900; pointer-events: none; }
+        .hotspot { fill: rgba(255,107,0,0.05); stroke: var(--accent); stroke-width: 1.2; cursor: crosshair; transition: 0.2s; }
+        .hotspot:hover { fill: rgba(255,107,0,0.4); stroke-width: 3; }
+        .box-label { fill: var(--accent); font-size: 3px; font-weight: 900; pointer-events: none; opacity: 0; transition: 0.3s; }
+        .img-wrap:hover .box-label { opacity: 1; }
 
-        /* Synthesis UI */
-        .synth-box { background: #000; color: #fff; padding: 10px; font-size: 11px; margin-top: 10px; border-left: 4px solid var(--accent); }
-        h2 { font-size: 1.1rem; margin: 5px 0; letter-spacing: -0.5px; border-bottom: 1px solid #eee; padding-bottom: 5px; }
-
-        /* New Interactions Panel */
-        .controls { background: white; padding: 15px; border-bottom: 1px solid #ddd; margin-bottom: 20px; position: sticky; top: 0; z-index: 10; display: flex; gap: 20px; align-items: center; }
-        .btn { padding: 8px 15px; background: #eee; border: none; font-size: 10px; font-weight: bold; cursor: pointer; text-transform: uppercase; }
-        .btn:hover { background: var(--accent); color: white; }
+        .synth-card { background: #000; color: #fff; padding: 15px; margin-top: 10px; font-size: 12px; height: 60px; overflow: hidden; }
     </style>
 </head>
 <body>
 
-<div class="controls">
-    <strong style="font-size: 12px;">SYNTHESIS FILTER:</strong>
-    <button class="btn" onclick="highlight('CHURCH')">Identify Church</button>
-    <button class="btn" onclick="highlight('REFECTORY')">Identify Refectory</button>
-    <button class="btn" onclick="highlight('GARTH')">Identify Garth</button>
-    <button class="btn" onclick="location.reload()">Reset</button>
-</div>
+<div class="dashboard">
+    <div class="header">
+        <strong>ARCHITECTURAL SYNTHESIS ENGINE (v2.0)</strong>
+        <span style="font-size: 11px;">&copy; 2026 [YOUR NAME]</span>
+    </div>
 
-<div class="container">
-    <div id="view" class="wrapper"></div>
+    <div id="view" class="main-view"></div>
 </div>
 
 <script src="database.js"></script>
 <script>
-    function highlight(name) {
-        document.querySelectorAll('.hotspot').forEach(el => {
-            el.style.fill = el.getAttribute('data-name') === name ? 'rgba(255, 107, 0, 0.6)' : 'rgba(0,0,0,0.05)';
-        });
-    }
-
     function render() {
         const view = document.getElementById('view');
-        if (typeof siteData === 'undefined') return;
+        if (!window.siteData) return;
 
         view.innerHTML = siteData.map(s => `
             <div class="column">
-                <span style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket} STYLE</span>
-                <h2>${s.name}</h2>
-                <div class="synth-box">${s.synthesis}</div>
+                <h3 style="margin: 0; font-size: 14px; color: var(--accent);">${s.bucket}</h3>
+                <h2 style="margin: 0 0 10px 0;">${s.name}</h2>
                 
-                <div class="img-box">
+                <div class="img-wrap">
                     <img src="${s.plan_url}">
-                    <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+                    <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; preserveAspectRatio: xMidYMid meet;">
                         ${s.labels.map(l => `
                             <g>
-                                <rect x="${l.x}" y="${l.y}" width="${l.w}" height="${l.h}" 
-                                      class="hotspot" data-name="${l.name}">
-                                    <title>${l.name} | Ratio: ${l.ratio}</title>
+                                <rect x="${l.x}" y="${l.y}" width="${l.w}" height="${l.h}" class="hotspot">
+                                    <title>${l.name}: ${l.ratio}</title>
                                 </rect>
-                                <text x="${l.x + 1}" y="${l.y + l.h - 1.5}" class="label-text">${l.name}</text>
+                                <text x="${l.x + 0.5}" y="${l.y + 3}" class="box-label">${l.name}</text>
                             </g>
                         `).join('')}
                     </svg>
                 </div>
+                <div class="synth-card"><strong>DIFFERENCE:</strong><br>${s.synthesis}</div>
             </div>`).join('');
     }
     window.onload = render;
