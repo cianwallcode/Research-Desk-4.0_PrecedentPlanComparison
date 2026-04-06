@@ -2,67 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Monastic Synthesis Tool</title>
+    <title>Architectural Synthesis Tool</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000' rx='15'/><text x='12' y='75' font-family='Arial Black' font-size='65' font-weight='900' fill='%23ff6b00'>R</text><text x='60' y='75' font-family='Arial Black' font-size='65' font-weight='900' fill='%23fff'>4</text></svg>">
+    
     <style>
         :root { --accent: #ff6b00; }
-        body { margin: 0; font-family: 'Segoe UI', sans-serif; background: #fff; overflow-y: scroll; }
-        
-        /* Layout */
-        .dashboard { display: flex; flex-direction: column; height: 100vh; }
-        .header { padding: 15px 40px; border-bottom: 2px solid #000; display: flex; justify-content: space-between; }
-        
-        .main-view { display: flex; gap: 20px; padding: 20px; flex: 1; min-height: 0; }
-        .column { flex: 1; display: flex; flex-direction: column; min-height: 0; border: 1px solid #eee; padding: 10px; }
-        
-        /* Smaller Images */
-        .img-wrap { position: relative; flex: 1; background: #f9f9f9; min-height: 0; display: flex; justify-content: center; }
-        .img-wrap img { max-height: 45vh; width: auto; object-fit: contain; }
-
-        /* Interactive Labels */
-        .hotspot { fill: rgba(255,107,0,0.05); stroke: var(--accent); stroke-width: 1.2; cursor: crosshair; transition: 0.2s; }
-        .hotspot:hover { fill: rgba(255,107,0,0.4); stroke-width: 3; }
-        .box-label { fill: var(--accent); font-size: 3px; font-weight: 900; pointer-events: none; opacity: 0; transition: 0.3s; }
-        .img-wrap:hover .box-label { opacity: 1; }
-
-        .synth-card { background: #000; color: #fff; padding: 15px; margin-top: 10px; font-size: 12px; height: 60px; overflow: hidden; }
+        body { margin: 0; padding: 0; font-family: sans-serif; background: #fff; overflow-y: scroll; }
+        .header { padding: 15px 40px; border-bottom: 2px solid #000; display: flex; justify-content: space-between; align-items: center; }
+        .main-view { display: flex; gap: 20px; padding: 20px; justify-content: center; align-items: flex-start; }
+        .column { flex: 1; max-width: 480px; border: 1px solid #eee; padding: 15px; background: #fff; }
+        .img-wrap { position: relative; width: 100%; background: #f9f9f9; border: 1px solid #ddd; }
+        .img-wrap img { width: 100%; height: auto; display: block; max-height: 45vh; object-fit: contain; }
+        .hotspot { fill: rgba(255, 107, 0, 0.05); stroke: var(--accent); stroke-width: 1.2; cursor: crosshair; }
+        .hotspot:hover { fill: rgba(255, 107, 0, 0.4); stroke-width: 2.5; }
+        .box-label { fill: var(--accent); font-size: 3.5px; font-weight: 900; pointer-events: none; }
+        .synth-card { background: #000; color: #fff; padding: 12px; margin-top: 10px; font-size: 11px; border-left: 4px solid var(--accent); }
+        footer { padding: 20px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #eee; margin-top: 40px; }
     </style>
 </head>
 <body>
 
-<div class="dashboard">
-    <div class="header">
-        <strong>ARCHITECTURAL SYNTHESIS ENGINE (v2.0)</strong>
-        <span style="font-size: 11px;">&copy; 2026 [YOUR NAME]</span>
-    </div>
-
-    <div id="view" class="main-view"></div>
+<div class="header">
+    <strong style="letter-spacing: -0.5px;">MONASTIC COMPARISON ENGINE</strong>
+    <span style="font-size: 10px;">v2.1 | &copy; 2026</span>
 </div>
+
+<div id="view" class="main-view">Loading...</div>
+
+<footer>
+    &copy; 2026 [Your Name]. All Rights Reserved. | Contact: [Email]
+</footer>
 
 <script src="database.js"></script>
 <script>
     function render() {
         const view = document.getElementById('view');
-        if (!window.siteData) return;
+        if (typeof siteData === 'undefined') {
+            view.innerHTML = "Error: database.js not found.";
+            return;
+        }
 
         view.innerHTML = siteData.map(s => `
             <div class="column">
-                <h3 style="margin: 0; font-size: 14px; color: var(--accent);">${s.bucket}</h3>
-                <h2 style="margin: 0 0 10px 0;">${s.name}</h2>
+                <div style="font-size: 9px; font-weight: 900; color: var(--accent); text-transform: uppercase;">${s.bucket}</div>
+                <h2 style="margin: 5px 0 15px 0; font-size: 1.3rem;">${s.name}</h2>
                 
                 <div class="img-wrap">
                     <img src="${s.plan_url}">
-                    <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; preserveAspectRatio: xMidYMid meet;">
+                    <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
                         ${s.labels.map(l => `
                             <g>
                                 <rect x="${l.x}" y="${l.y}" width="${l.w}" height="${l.h}" class="hotspot">
-                                    <title>${l.name}: ${l.ratio}</title>
+                                    <title>${l.name} | Ratio: ${l.ratio}</title>
                                 </rect>
-                                <text x="${l.x + 0.5}" y="${l.y + 3}" class="box-label">${l.name}</text>
+                                <text x="${l.x + 1}" y="${l.y + 4}" class="box-label">${l.name}</text>
                             </g>
                         `).join('')}
                     </svg>
                 </div>
-                <div class="synth-card"><strong>DIFFERENCE:</strong><br>${s.synthesis}</div>
+                <div class="synth-card"><strong>SYNTHESIS:</strong><br>${s.synthesis}</div>
             </div>`).join('');
     }
     window.onload = render;
