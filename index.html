@@ -2,103 +2,65 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>RESEARCH DESK</title>
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <title>PRECEDENT COMPARISON MATRIX</title>
     <style>
-        :root { --accent: #ff6b00; --nav-h: 70px; }
-        body, html { margin: 0; padding: 0; font-family: sans-serif; }
-        nav { background: #000; color: #fff; height: var(--nav-h); display: flex; align-items: center; padding: 0 20px; position: fixed; width: 100%; z-index: 1000; }
-        .nav-btn { color: #888; background: none; border: none; cursor: pointer; margin-left: 20px; text-transform: uppercase; font-size: 12px; }
-        .active { color: #fff; border-bottom: 2px solid var(--accent); }
-        .page { display: none; padding-top: var(--nav-h); min-height: 100vh; }
-        #view-gis { display: none; height: calc(100vh - var(--nav-h)); }
-        #map { flex: 1; }
-        #sidebar { width: 300px; padding: 20px; background: #f9f9f9; border-right: 1px solid #ddd; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 20px; padding: 40px; }
-        .card img { width: 100%; height: 200px; object-fit: contain; background: #eee; }
-        footer { background: #000; color: #555; padding: 40px; }
+        :root { --accent: #ff6b00; }
+        body { margin: 0; font-family: sans-serif; background: #fff; }
+        
+        .comp-wrapper { display: flex; gap: 20px; padding: 40px; justify-content: center; }
+        .plan-column { flex: 1; max-width: 600px; border: 1px solid #eee; padding: 20px; }
+        
+        .plan-image { width: 100%; height: 500px; object-fit: contain; background: #f9f9f9; border: 1px solid #ddd; }
+        
+        .analysis-table { width: 100%; border-collapse: collapse; margin-top: 30px; font-size: 14px; }
+        .analysis-table th { background: #000; color: #fff; padding: 12px; text-align: left; text-transform: uppercase; font-size: 10px; }
+        .analysis-table td { padding: 15px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .feature-label { font-weight: 800; width: 30%; color: var(--accent); text-transform: uppercase; font-size: 11px; }
+        
+        h2 { letter-spacing: -1px; border-bottom: 4px solid #000; padding-bottom: 10px; }
     </style>
 </head>
 <body>
-    <nav>
-        <b onclick="showPage('home')">RESEARCH<span style="color:var(--accent)">DESK</span></b>
-        <button class="nav-btn" onclick="showPage('home')">Home</button>
-        <button class="nav-btn" onclick="showPage('gis')">Map</button>
-        <button class="nav-btn" onclick="showPage('comp')">Precedents</button>
-    </nav>
 
-    <div id="view-home" class="page" style="display:block">
-        <div style="text-align:center; padding:100px;">
-            <h1>Architectural Synthesis</h1>
-            <button onclick="showPage('gis')" style="background:var(--accent); color:#fff; border:none; padding:15px 30px; cursor:pointer;">START PROJECT</button>
-        </div>
-        <footer>&copy; 2026 orange/white branding research@desk.ie</footer>
+<div class="comp-wrapper" id="comparison-view">
     </div>
 
-    <div id="view-gis" class="page">
-        <div id="sidebar">
-            <h2 id="stitle">Select Site</h2>
-            <div id="controls" style="display:none">
-                <label>Boundary <input type="checkbox" id="bchk" checked onchange="draw()"></label><br>
-                <label>Flood <input type="checkbox" id="fchk" checked onchange="draw()"></label>
+<script src="database.js"></script>
+<script>
+    function renderComparison() {
+        const container = document.getElementById('comparison-view');
+        
+        // Target specifically Mellifont (Cistercian) and Cluny (Benedictine)
+        const cistercian = siteData.find(s => s.bucket === "Cistercian");
+        const benedictine = siteData.find(s => s.bucket === "Benedictine");
+
+        const pair = [cistercian, benedictine];
+
+        container.innerHTML = pair.map(s => `
+            <div class="plan-column">
+                <div style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket.toUpperCase()}</div>
+                <h2>${s.name}</h2>
+                <img src="${s.plan_url}" class="plan-image" onerror="this.src='https://via.placeholder.com/600x500?text=Image+Load+Error'">
+                
+                <table class="analysis-table">
+                    <tr><th>Feature</th><th>Typological Detail</th></tr>
+                    <tr><td class="feature-label">Plan Logic</td><td>${s.plan_type}</td></tr>
+                    <tr><td class="feature-label">East End</td><td>${s.bucket === 'Cistercian' ? 'Square / Flat' : 'Radial / Chevet'}</td></tr>
+                    <tr><td class="feature-label">Aesthetic</td><td>${s.style}</td></tr>
+                    <tr><td class="feature-label">Notes</td><td>${s.notes}</td></tr>
+                </table>
             </div>
-        </div>
-        <div id="map"></div>
-    </div>
+        `).join('');
+    }
 
-    <div id="view-comp" class="page">
-        <div class="grid" id="g"></div>
-    </div>
-
-    <script src="database.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script>
-        let m, markers, bl, fl, active;
-
-        function showPage(p) {
-            document.querySelectorAll('.page').forEach(div => div.style.display = 'none');
-            const target = document.getElementById('view-' + p);
-            target.style.display = (p === 'gis') ? 'flex' : 'block';
-            if(p === 'gis') { initMap(); setTimeout(()=>m.invalidateSize(), 100); }
-            if(p === 'comp') render();
+    window.onload = () => {
+        if (typeof siteData !== 'undefined') {
+            renderComparison();
+        } else {
+            document.body.innerHTML = "<h1 style='color:red; padding:40px;'>Error: database.js not found or contains syntax errors.</h1>";
         }
+    };
+</script>
 
-        function initMap() {
-            if(m) return;
-            m = L.map('map').setView([53.4, -7.8], 7);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png').addTo(m);
-            markers = L.layerGroup().addTo(m);
-            bl = L.layerGroup().addTo(m);
-            fl = L.layerGroup().addTo(m);
-            siteData.forEach(s => {
-                L.circleMarker(s.coords, {color: 'var(--accent)'}).addTo(markers)
-                 .bindPopup(`<b>${s.name}</b><br><button onclick="zoom(${s.id})">ZOOM</button>`);
-            });
-        }
-
-        function zoom(id) {
-            active = siteData.find(s => s.id === id);
-            m.flyTo(active.coords, 18);
-            document.getElementById('stitle').innerText = active.name;
-            document.getElementById('controls').style.display = 'block';
-            draw();
-        }
-
-        function draw() {
-            bl.clearLayers(); fl.clearLayers();
-            if(document.getElementById('bchk').checked) L.polygon(active.boundary, {color:'red', fill:false}).addTo(bl);
-            if(document.getElementById('fchk').checked) L.polygon(active.flood_zone, {color:'blue'}).addTo(fl);
-        }
-
-        function render() {
-            document.getElementById('g').innerHTML = siteData.map(s => `
-                <div class="card">
-                    <img src="${s.plan_url}">
-                    <h3>${s.name}</h3>
-                    <p>${s.plan_type}</p>
-                </div>
-            `).join('');
-        }
-    </script>
 </body>
 </html>
