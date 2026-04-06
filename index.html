@@ -8,7 +8,7 @@
         body { margin: 0; font-family: sans-serif; background: #fff; padding: 40px; }
         .wrapper { display: flex; gap: 30px; justify-content: center; }
         .column { flex: 1; max-width: 500px; border: 1px solid #eee; padding: 20px; }
-        .img-box { width: 100%; height: 400px; background: #f9f9f9; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .img-box { width: 100%; height: 400px; background: #f9f9f9; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; }
         .img-box img { max-width: 95%; max-height: 95%; object-fit: contain; }
         .table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 13px; }
         .table th { background: #000; color: #fff; padding: 10px; text-align: left; text-transform: uppercase; font-size: 9px; }
@@ -19,24 +19,25 @@
 </head>
 <body>
 
-<div class="wrapper" id="view"></div>
+<div id="view">Loading comparison data...</div>
 
 <script src="database.js"></script>
 <script>
-    function render() {
+    window.onload = function() {
         const view = document.getElementById('view');
-        // If siteData isn't loaded, show an error on the page
+        
         if (typeof siteData === 'undefined') {
-            view.innerHTML = "<h1 style='color:red'>Error: database.js not loaded. Check file name.</h1>";
+            view.innerHTML = "<h1 style='color:red'>Error: database.js not found in repository.</h1>";
             return;
         }
-        
+
+        view.className = "wrapper";
         view.innerHTML = siteData.map(s => `
             <div class="column">
                 <div style="font-size: 10px; font-weight: 900; color: var(--accent);">${s.bucket}</div>
                 <h2>${s.name}</h2>
                 <div class="img-box">
-                    <img src="${s.plan_url}" onerror="this.src='https://placehold.co/600x400?text=File+Not+Found'">
+                    <img src="${s.plan_url}" onerror="this.src='https://placehold.co/600x400?text=Check+Filename'">
                 </div>
                 <table class="table">
                     <tr><th>Feature</th><th>Detail</th></tr>
@@ -46,10 +47,7 @@
                 </table>
             </div>
         `).join('');
-    }
-
-    // Run render immediately on load
-    window.onload = render;
+    };
 </script>
 
 </body>
