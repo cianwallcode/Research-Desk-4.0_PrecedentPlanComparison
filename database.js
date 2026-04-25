@@ -8,8 +8,8 @@ const siteData = [
     "synthesis": "90° Refectory alignment + Square Apse. Typical Cistercian austerity.",
     "labels": [
         { "x": 30, "y": 10, "w": 40, "h": 18, "name": "CHURCH", "prop": "1:3 Axis" },
-        { "x": 38, "y": 32, "w": 24, "h": 24, "name": "GARTH", "prop": "1:1 Square" },
-        { "x": 46, "y": 60, "w": 8, "h": 28, "name": "REFECTORY", "prop": "1:√2 Ratio" }
+        { "x": 41, "y": 35, "w": 18, "h": 18, "name": "GARTH", "prop": "1:1 Square" },
+        { "x": 44, "y": 55, "w": 12, "h": 25, "name": "REFECTORY", "prop": "1:√2 Ratio" }
     ]
   },
   {
