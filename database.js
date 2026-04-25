@@ -1,17 +1,24 @@
 /* * COPYRIGHT (C) 2026 [YOUR NAME] - ALL RIGHTS RESERVED */
 const siteData = [
-  {
+{
     "id": 1,
     "name": "Mellifont Abbey",
     "bucket": "Cistercian",
     "plan_url": "mellifont.jpg",
     "synthesis": "90° Refectory alignment + Square Apse. Typical Cistercian austerity.",
     "labels": [
-        { "x": 30, "y": 10, "w": 40, "h": 18, "name": "CHURCH", "prop": "1:3 Axis" },
-        { "x": 41, "y": 35, "w": 18, "h": 18, "name": "GARTH", "prop": "1:1 Square" },
-        { "x": 44, "y": 55, "w": 12, "h": 25, "name": "REFECTORY", "prop": "1:√2 Ratio" }
+        { 
+            "name": "CHURCH", 
+            "prop": "1:3 Axis", 
+            "parts": [
+                { "x": 45, "y": 10, "w": 10, "h": 60 }, // Nave (Vertical)
+                { "x": 25, "y": 30, "w": 50, "h": 15 }  // Transept (Horizontal)
+            ]
+        },
+        { "x": 41, "y": 75, "w": 18, "h": 18, "name": "GARTH", "prop": "1:1 Square" },
+        { "x": 44, "y": 95, "w": 12, "h": 25, "name": "REFECTORY", "prop": "1:√2 Ratio" }
     ]
-  },
+}
   {
     "id": 2,
     "name": "Cluny Abbey III",
