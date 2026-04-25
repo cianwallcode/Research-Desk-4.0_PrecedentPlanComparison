@@ -5,6 +5,8 @@ Key features.
 -Proportion analysis.
 -Side by side image comparison.
 
+This is a proof of concept so right now the database.js just has coordinates for the boundary box and there's no api ai drawing the boundary box, so it's fake basically.
+
 [file-tag: code-generated-file-a1b2c3d4e5f6]
 
 This file contains the complete documentation, philosophical context, technical requirements, and the re-initialization prompt needed to recreate the Precedent Comparison Engine in any new environment. You can also copy the content below for immediate use.
