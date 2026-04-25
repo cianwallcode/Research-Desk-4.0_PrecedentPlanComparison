@@ -1,6 +1,9 @@
 # Research-Desk-4.0_PrecedentPlanComparison. Computer vision model.
 
-Your README file is ready.
+Key features.
+-Image identification and boundary box creation.
+-Proportion analysis.
+-Side by side image comparison.
 
 [file-tag: code-generated-file-a1b2c3d4e5f6]
 
