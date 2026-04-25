@@ -3,110 +3,74 @@
 <head>
     <meta charset="UTF-8">
     <title>Precedent Comparison Engine</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23000' rx='15'/><text x='12' y='75' font-family='Arial Black' font-size='65' font-weight='900' fill='%23ff6b00'>R</text><text x='60' y='75' font-family='Arial Black' font-size='65' font-weight='900' fill='%23fff'>4</text></svg>">
-    
     <style>
         :root { --accent: #ff6b00; --sidebar-w: 220px; }
-        body { margin: 0; padding: 0; font-family: sans-serif; background: #fff; display: flex; height: 100vh; overflow: hidden; }
+        body { margin: 0; font-family: sans-serif; background: #fff; display: flex; height: 100vh; overflow: hidden; }
         
-        /* Sidebar Navigation */
         .sidebar { width: var(--sidebar-w); background: #f4f4f4; border-right: 2px solid #000; display: flex; flex-direction: column; padding: 20px; z-index: 10; }
         .sidebar h1 { font-size: 14px; letter-spacing: -0.5px; margin-bottom: 30px; border-bottom: 2px solid #000; padding-bottom: 10px; }
         
-        /* Dashboard Controls */
-        .control-group { margin-bottom: 20px; }
-        .control-label { font-size: 10px; font-weight: 900; color: #666; margin-bottom: 8px; display: block; text-transform: uppercase; }
-        .toggle-btn { width: 100%; padding: 10px; background: #ddd; border: none; cursor: pointer; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 5px; text-align: left; transition: 0.2s; }
-        .toggle-btn.active { background: var(--accent); color: #fff; }
+        .tab-btn { width: 100%; padding: 12px; background: none; border: 1px solid #000; cursor: pointer; font-size: 10px; font-weight: 800; text-transform: uppercase; margin-bottom: 10px; text-align: left; transition: 0.2s; }
+        .tab-btn.active { background: #000; color: #fff; }
 
-        /* Main Viewport */
-        .viewport { flex: 1; display: flex; flex-direction: column; overflow-y: auto; background: #fff; }
-        .main-view { display: flex; gap: 20px; padding: 30px; justify-content: center; align-items: flex-start; }
-        
-        .column { flex: 1; max-width: 480px; display: flex; flex-direction: column; }
-        .img-wrap { position: relative; width: 100%; border: 1px solid #ddd; background: #fdfdfd; line-height: 0; }
-        .img-wrap img { width: 100%; height: auto; max-height: 48vh; object-fit: contain; }
+        .viewport { flex: 1; overflow-y: auto; background: #fff; }
+        .tab-content { padding: 30px; display: none; }
+        .tab-content.active { display: flex; flex-wrap: wrap; gap: 30px; }
 
-        /* SVG Overlays & States */
-        .hotspot-group { transition: opacity 0.3s; opacity: 0; pointer-events: none; }
-        .show-features .hotspot-group { opacity: 1; pointer-events: auto; }
-        
-        .hotspot { fill: rgba(255, 107, 0, 0.08); stroke: var(--accent); stroke-width: 1.2; }
-        .box-label { fill: var(--accent); font-size: 3.5px; font-weight: 900; pointer-events: none; text-transform: uppercase; }
-        .prop-label { fill: #000; font-size: 3px; font-weight: 400; opacity: 0; transition: 0.3s; }
-        .show-props .prop-label { opacity: 1; }
-
-        .synth-card { background: #000; color: #fff; padding: 12px; margin-top: 15px; font-size: 11px; border-left: 4px solid var(--accent); }
+        /* Existing styles for content */
+        .column { flex: 1; min-width: 400px; max-width: 480px; }
+        .img-wrap { position: relative; border: 1px solid #ddd; line-height: 0; }
+        .img-wrap img { width: 100%; }
     </style>
 </head>
-<body class="show-features">
+<body>
 
 <div class="sidebar">
-    <h1>PRECEDENT<br>ENGINE v2.2</h1>
+    <h1>PRECEDENT<br>ENGINE v2.3</h1>
     
     <div class="control-group">
-        <span class="control-label">Visual Overlays</span>
-        <button id="featToggle" class="toggle-btn active" onclick="toggleFeatures()">Feature ID: ON</button>
-        <button id="propToggle" class="toggle-btn" onclick="toggleProps()">Proportions: OFF</button>
+        <span class="control-label">Navigation</span>
+        <button id="btn-plan" class="tab-btn active" onclick="switchTab('tab-plan', 'btn-plan')">Plan Tab</button>
+        <button id="btn-cloisters" class="tab-btn" onclick="switchTab('tab-cloisters', 'btn-cloisters')">Cloisters & Arcades</button>
     </div>
 
-    <div style="margin-top: auto; font-size: 9px; color: #999;">
-        &copy; 2026 [YOUR NAME]<br>All Rights Reserved.
-    </div>
+    <div style="margin-top: auto; font-size: 9px; color: #999;">&copy; 2026 R4. All Rights Reserved.</div>
 </div>
 
 <div class="viewport">
-    <div id="view" class="main-view"></div>
+    <div id="tab-plan" class="tab-content active" id="view-plan"></div>
+    
+    <div id="tab-cloisters" class="tab-content">
+        <div style="width: 100%; color: #666; font-style: italic;">Cloisters and Arcades archive loading...</div>
+    </div>
 </div>
-
-<div id="chat-btn" onclick="alert('Gemini Free Tier API connecting...')" style="position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: #000; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; font-weight: 900; font-size: 20px; border: 2px solid var(--accent);">G</div>
 
 <script src="database.js"></script>
 <script>
-    let featuresActive = true;
-    let propsActive = false;
-
-    function toggleFeatures() {
-        featuresActive = !featuresActive;
-        document.body.classList.toggle('show-features', featuresActive);
-        document.getElementById('featToggle').innerText = `Feature ID: ${featuresActive ? 'ON' : 'OFF'}`;
-        document.getElementById('featToggle').classList.toggle('active', featuresActive);
+    function switchTab(tabId, btnId) {
+        // Hide all tabs
+        document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        
+        // Show selected
+        document.getElementById(tabId).classList.add('active');
+        document.getElementById(btnId).classList.add('active');
     }
 
-    function toggleProps() {
-        propsActive = !propsActive;
-        document.body.classList.toggle('show-props', propsActive);
-        document.getElementById('propToggle').innerText = `Proportions: ${propsActive ? 'ON' : 'OFF'}`;
-        document.getElementById('propToggle').classList.toggle('active', propsActive);
-    }
-
-    function render() {
-        const view = document.getElementById('view');
+    function renderPlans() {
+        const view = document.getElementById('tab-plan');
         if (typeof siteData === 'undefined') return;
-
+        
         view.innerHTML = siteData.map(s => `
             <div class="column">
                 <div style="font-size: 9px; font-weight: 900; color: var(--accent);">${s.bucket} PRECEDENT</div>
-                <h2 style="margin: 5px 0 15px 0; font-size: 1.4rem; letter-spacing: -0.5px;">${s.name}</h2>
-                
-                <div class="img-wrap">
-                    <img src="${s.plan_url}">
-                    <svg viewBox="0 0 100 100" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
-                        ${s.labels.map(l => `
-                            <g class="hotspot-group">
-                                <rect x="${l.x}" y="${l.y}" width="${l.w}" height="${l.h}" class="hotspot">
-                                    <title>${l.name} Analysis</title>
-                                </rect>
-                                <text x="${l.x + 1}" y="${l.y + 4}" class="box-label">${l.name}</text>
-                                <text x="${l.x + 1}" y="${l.y + 8.5}" class="prop-label">${l.prop}</text>
-                            </g>
-                        `).join('')}
-                    </svg>
-                </div>
-                <div class="synth-card"><strong>PRECEDENT ANALYSIS:</strong><br>${s.synthesis}</div>
+                <h2 style="margin: 5px 0 15px 0; font-size: 1.4rem;">${s.name}</h2>
+                <div class="img-wrap"><img src="${s.plan_url}"></div>
+                <div class="synth-card" style="margin-top:15px; font-size:11px;">${s.synthesis}</div>
             </div>`).join('');
     }
-    window.onload = render;
+
+    window.onload = renderPlans;
 </script>
 </body>
 </html>
